@@ -43,3 +43,7 @@ LM_STUDIO_API_BASE = st.secrets.get("LM_STUDIO_API_BASE", "")
 LM_STUDIO_CHAT_MODEL = st.secrets.get("LM_STUDIO_CHAT_MODEL", "")
 LM_STUDIO_EMBEDDING_MODEL = st.secrets.get("LM_STUDIO_EMBEDDING_MODEL", "")
 
+# Perplexity search secrets
+USE_PERPLEXITY = st.secrets.get("USE_PERPLEXITY", False)
+PERPLEXITY_API_KEY = st.secrets.get("PERPLEXITY_API_KEY", "")
+

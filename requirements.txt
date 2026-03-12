@@ -11,5 +11,6 @@ plotly
 scikit-learn
 openpyxl
 tiktoken
+ddgs
 python-jose==3.3.0
 customerio==2.1
