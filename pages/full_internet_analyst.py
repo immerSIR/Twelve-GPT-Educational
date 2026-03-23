@@ -157,14 +157,31 @@ Return ONLY valid JSON:
 # ---------------------------------------------------------------------------
 # LLM call — provider switching matching the rest of the app
 # ---------------------------------------------------------------------------
+def _clean_messages_for_llm(messages: list) -> list:
+    """Strip UI metadata so provider APIs only receive role/content pairs."""
+    cleaned = []
+    for message in messages:
+        if not isinstance(message, dict):
+            continue
+        role = message.get("role")
+        content = message.get("content")
+        if role not in {"system", "user", "assistant", "developer"}:
+            continue
+        if not isinstance(content, str):
+            continue
+        cleaned.append({"role": role, "content": content})
+    return cleaned
+
+
 def _call_llm(messages: list) -> str:
     """Send messages to the configured LLM and return the response text."""
+    clean_messages = _clean_messages_for_llm(messages)
     if USE_GEMINI:
         import google.generativeai as genai
         from utils.gemini import convert_messages_format
 
         genai.configure(api_key=GEMINI_API_KEY)
-        converted = convert_messages_format(messages)
+        converted = convert_messages_format(clean_messages)
         model = genai.GenerativeModel(
             model_name=GEMINI_CHAT_MODEL,
             system_instruction=converted["system_instruction"],
@@ -176,7 +193,7 @@ def _call_llm(messages: list) -> str:
         client = OpenAI(api_key=OPENAI_API_KEY)
         response = client.chat.completions.create(
             model=OPENAI_CHAT_MODEL,
-            messages=messages,
+            messages=clean_messages,
             temperature=0.7,
         )
         return response.choices[0].message.content
@@ -184,7 +201,7 @@ def _call_llm(messages: list) -> str:
         client = OpenAI(api_key=LM_STUDIO_API_KEY, base_url=LM_STUDIO_API_BASE)
         response = client.chat.completions.create(
             model=LM_STUDIO_CHAT_MODEL,
-            messages=messages,
+            messages=clean_messages,
             temperature=0.7,
         )
         return response.choices[0].message.content
@@ -192,7 +209,7 @@ def _call_llm(messages: list) -> str:
         client = OpenAI(api_key=GPT_KEY, base_url=GPT_BASE)
         response = client.responses.create(
             model=GPT_CHAT_MODEL,
-            input=messages,
+            input=clean_messages,
         )
         return response.output_text
 
@@ -512,10 +529,7 @@ class InternetAnalystChat(Chat):
         st.session_state.fia_source_tier = None
         st.session_state.fia_answer_language = "en"
 
-        history_messages = [
-            message for message in self.messages_to_display.copy()
-            if isinstance(message.get("content"), str)
-        ]
+        history_messages = _clean_messages_for_llm(self.messages_to_display.copy())
         relevant_info = self.get_relevant_info(input)
 
         self.messages_to_display.append({"role": "user", "content": input})
@@ -548,7 +562,9 @@ class InternetAnalystChat(Chat):
                     ),
                 }
             )
-            st.expander("Chat transcript", expanded=False).write(llm_messages)
+            st.expander("Chat transcript", expanded=False).write(
+                _clean_messages_for_llm(llm_messages)
+            )
 
             with st.spinner("Writing answer..."):
                 assistant_content = _call_llm(llm_messages)
