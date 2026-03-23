@@ -12,5 +12,6 @@ scikit-learn
 openpyxl
 tiktoken
 ddgs
+dateparser
 python-jose==3.3.0
 customerio==2.1

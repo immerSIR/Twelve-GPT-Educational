@@ -7,15 +7,15 @@ GPT_CHAT_MODEL = st.secrets.get("GPT_CHAT_MODEL")
 GPT_EMBEDDINGS_MODEL = st.secrets.get("GPT_EMBEDDINGS_MODEL")
 
 
-if "gpt-5-mini" in GPT_CHAT_MODEL:
+if "gpt-5-mini" in (GPT_CHAT_MODEL or ""):
 	GPT_SUPPORTS_REASONING = True
 	GPT_AVAILABLE_REASONING_EFFORTS = ["minimal", "low", "medium", "high"]
 	GPT_SUPPORTS_TEMPERATURE = False
-elif "gpt-5-nano" in GPT_CHAT_MODEL:
+elif "gpt-5-nano" in (GPT_CHAT_MODEL or ""):
 	GPT_SUPPORTS_REASONING = True
 	GPT_AVAILABLE_REASONING_EFFORTS = ["minimal", "low", "medium", "high"]
 	GPT_SUPPORTS_TEMPERATURE = False
-elif "gpt-4o-mini" in GPT_CHAT_MODEL:
+elif "gpt-4o-mini" in (GPT_CHAT_MODEL or ""):
 	GPT_SUPPORTS_REASONING = False
 	GPT_AVAILABLE_REASONING_EFFORTS = []
 	GPT_SUPPORTS_TEMPERATURE = True
