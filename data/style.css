@@ -248,6 +248,11 @@ div[data-testid="stVerticalBlockBorderWrapper"][height="499"] button>div>p {
     font-weight: 600;
 }
 
+/* Fix low-contrast inline code blocks (dark green bg from secondaryBackgroundColor) */
+code {
+    color: #ffffff !important;
+}
+
 button[data-testid="baseButton-primary"] {
     position: relative;
     color: black;
