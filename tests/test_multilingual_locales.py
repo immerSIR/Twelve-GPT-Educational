@@ -16,7 +16,7 @@ class MultilingualLocaleTests(unittest.TestCase):
     def test_portuguese_query_prefers_portuguese_locale(self):
         plan = normalise_query_plan(
             {
-                "query_type": "match_report",
+
                 "user_language": "pt",
                 "answer_language": "pt",
                 "absolute_date": "2026-03-22",
@@ -46,7 +46,7 @@ class MultilingualLocaleTests(unittest.TestCase):
     def test_english_query_about_polish_match_prefers_polish_locale(self):
         plan = normalise_query_plan(
             {
-                "query_type": "match_report",
+
                 "user_language": "en",
                 "answer_language": "en",
                 "absolute_date": "2026-03-22",
@@ -75,7 +75,7 @@ class MultilingualLocaleTests(unittest.TestCase):
     def test_egyptian_match_prefers_arabic_locale(self):
         plan = normalise_query_plan(
             {
-                "query_type": "match_report",
+
                 "user_language": "en",
                 "answer_language": "en",
                 "absolute_date": "2026-03-22",
@@ -119,7 +119,7 @@ class MultilingualLocaleTests(unittest.TestCase):
     def test_default_match_report_queries_include_reaction_terms(self):
         plan = normalise_query_plan(
             {
-                "query_type": "match_report",
+
                 "user_language": "en",
                 "answer_language": "en",
                 "absolute_date": "2026-03-22",
@@ -136,15 +136,63 @@ class MultilingualLocaleTests(unittest.TestCase):
             today=date(2026, 3, 23),
         )
 
-        english_queries = next(
-            batch["queries"] for batch in plan["search_query_batches"] if batch["locale"] == "en"
+        reaction_queries = next(
+            batch["queries"]
+            for batch in plan["search_query_batches"]
+            if batch["locale"] == "en" and batch["query_category"] == "post_match_reaction"
         )
-        self.assertTrue(any("reaction" in query or "opinion" in query for query in english_queries))
+        context_queries = next(
+            batch["queries"]
+            for batch in plan["search_query_batches"]
+            if batch["locale"] == "en" and batch["query_category"] == "context_sentiment"
+        )
+        self.assertTrue(any("reaction" in query or "opinion" in query for query in reaction_queries))
+        self.assertTrue(any("fan reaction" in query or "coach under pressure" in query for query in context_queries))
+
+    def test_same_locale_multi_category_batches_survive_normalisation(self):
+        plan = normalise_query_plan(
+            {
+
+                "user_language": "pt",
+                "answer_language": "pt",
+                "absolute_date": "2026-03-22",
+                "entities": [
+                    {"name": "FC Porto", "type": "club"},
+                    {"name": "SC Braga", "type": "club"},
+                ],
+                "competition_country": "Portugal",
+                "search_locales": ["pt-PT"],
+                "entity_aliases": {},
+                "search_query_batches": [
+                    {
+                        "locale": "pt-PT",
+                        "query_category": "match_narrative",
+                        "queries": ["FC Porto vs SC Braga 22 março 2026 crónica"],
+                    },
+                    {
+                        "locale": "pt-PT",
+                        "query_category": "context_sentiment",
+                        "queries": ["FC Porto adeptos reação ambiente 2025/26"],
+                    },
+                ],
+            },
+            "Como foi o jogo entre FC Porto e SC Braga no dia 22 de março?",
+            today=date(2026, 3, 23),
+        )
+
+        categories = [
+            batch["query_category"]
+            for batch in plan["search_query_batches"]
+            if batch["locale"] == "pt-PT"
+        ]
+        self.assertIn("match_narrative", categories)
+        self.assertIn("context_sentiment", categories)
+        self.assertIn("post_match_reaction", categories)
 
     def test_verify_match_hits_handles_portuguese_sources(self):
         plan = normalise_query_plan(
             {
-                "query_type": "match_report",
+
                 "user_language": "pt",
                 "answer_language": "pt",
                 "absolute_date": "2026-03-22",
@@ -224,7 +272,7 @@ class MultilingualLocaleTests(unittest.TestCase):
     def test_search_multi_prefers_curated_local_before_english_fallback(self, mock_search_internet):
         plan = normalise_query_plan(
             {
-                "query_type": "match_report",
+
                 "user_language": "pt",
                 "answer_language": "pt",
                 "absolute_date": "2026-03-22",
@@ -249,7 +297,8 @@ class MultilingualLocaleTests(unittest.TestCase):
         match_context = build_match_context_from_plan(plan, fallback_query="FC Porto vs SC Braga")
 
         def side_effect(query, locale="en", source_tier="english_fallback"):
-            if locale == "pt-PT":
+            lowered = query.lower()
+            if locale == "pt-PT" and "fc porto" in lowered and "adept" not in lowered and "reac" not in lowered and "confer" not in lowered:
                 return {
                     "answer": "Crónica: FC Porto 2-1 SC Braga em 22/03/2026.",
                     "citations": ["https://www.ojogo.pt/futebol/1a-liga/noticias/cronica-fc-porto-sc-braga-123"],
@@ -263,21 +312,27 @@ class MultilingualLocaleTests(unittest.TestCase):
                     ],
                     "provider": "DuckDuckGo",
                 }
-            raise AssertionError("English fallback should not run after a verified Portuguese narrative hit")
+            return {
+                "answer": "No results found.",
+                "citations": [],
+                "hits": [],
+                "provider": "DuckDuckGo",
+            }
 
         mock_search_internet.side_effect = side_effect
         result = search_multi(plan["search_query_batches"], match_context=match_context)
 
-        self.assertEqual(result["winning_locale"], "pt-PT")
+        self.assertEqual(result["primary_match_locale"], "pt-PT")
         self.assertEqual(result["source_tier"], "curated_local")
         self.assertEqual(result["verified_match"]["winning_locale"], "pt-PT")
-        self.assertEqual(len(result["locale_attempts"]), 1)
+        self.assertEqual(len(result["locale_attempts"]), len(plan["search_query_batches"]))
+        self.assertTrue(result["evidence_blocks"]["match_narrative"])
 
     @patch("utils.search.search_internet")
     def test_search_multi_reports_open_web_local_for_uncurated_locale(self, mock_search_internet):
         plan = normalise_query_plan(
             {
-                "query_type": "match_report",
+
                 "user_language": "en",
                 "answer_language": "en",
                 "absolute_date": "2026-03-22",
@@ -299,7 +354,7 @@ class MultilingualLocaleTests(unittest.TestCase):
         match_context = build_match_context_from_plan(plan, fallback_query="Dinamo Zagreb vs Hajduk Split")
 
         def side_effect(query, locale="en", source_tier="english_fallback"):
-            if locale == "hr":
+            if locale == "hr" and "match report" in query.lower():
                 return {
                     "answer": "Dinamo Zagreb 2-1 Hajduk Split match report 22/03/2026.",
                     "citations": ["https://sportske.jutarnji.hr/example"],
@@ -313,15 +368,101 @@ class MultilingualLocaleTests(unittest.TestCase):
                     ],
                     "provider": "DuckDuckGo",
                 }
-            raise AssertionError("English fallback should not run after an open-web local verification success")
+            return {
+                "answer": "No results found.",
+                "citations": [],
+                "hits": [],
+                "provider": "DuckDuckGo",
+            }
 
         mock_search_internet.side_effect = side_effect
         result = search_multi(plan["search_query_batches"], match_context=match_context)
 
-        self.assertEqual(result["winning_locale"], "hr")
+        self.assertEqual(result["primary_match_locale"], "hr")
         self.assertEqual(result["source_tier"], "open_web_local")
         self.assertEqual(result["verified_match"]["source_tier"], "open_web_local")
         self.assertEqual(result["verified_match"]["verified_source_language"], "hr")
+
+    @patch("utils.search.search_internet")
+    def test_search_multi_combines_match_and_context_evidence(self, mock_search_internet):
+        plan = normalise_query_plan(
+            {
+
+                "user_language": "en",
+                "answer_language": "en",
+                "absolute_date": "2026-03-22",
+                "entities": [
+                    {"name": "FC Porto", "type": "club"},
+                    {"name": "SC Braga", "type": "club"},
+                ],
+                "competition_country": "Portugal",
+                "search_locales": ["pt-PT", "en"],
+                "entity_aliases": {
+                    "FC Porto": ["Porto"],
+                    "SC Braga": ["Braga", "Sporting Braga"],
+                },
+                "search_query_batches": [
+                    {
+                        "locale": "pt-PT",
+                        "query_category": "match_narrative",
+                        "queries": ["FC Porto vs SC Braga 22 março 2026 crónica"],
+                    },
+                    {
+                        "locale": "pt-PT",
+                        "query_category": "context_sentiment",
+                        "queries": ["FC Porto adeptos reação ambiente 2025/26"],
+                    },
+                ],
+            },
+            "How was FC Porto vs SC Braga on March 22?",
+            today=date(2026, 3, 23),
+        )
+        match_context = build_match_context_from_plan(plan, fallback_query="FC Porto vs SC Braga")
+
+        def side_effect(query, locale="en", source_tier="english_fallback"):
+            lowered = query.lower()
+            if "fc porto" in lowered and "adept" not in lowered and "reac" not in lowered and "confer" not in lowered:
+                return {
+                    "answer": "Crónica: FC Porto 2-1 SC Braga em 22/03/2026.",
+                    "citations": ["https://www.ojogo.pt/cronica-fc-porto-sc-braga"],
+                    "hits": [
+                        {
+                            "title": "Crónica FC Porto 2-1 SC Braga",
+                            "body": "22/03/2026: FC Porto 2-1 SC Braga. Crónica e análise tática.",
+                            "href": "https://www.ojogo.pt/cronica-fc-porto-sc-braga",
+                            "locale": "pt-PT",
+                        }
+                    ],
+                    "provider": "DuckDuckGo",
+                }
+            if "adept" in lowered or "atmosf" in lowered:
+                return {
+                    "answer": "Adeptos do FC Porto assobiaram apesar da vitória.",
+                    "citations": ["https://www.abola.pt/fc-porto-adeptos-assobios"],
+                    "hits": [
+                        {
+                            "title": "Assobios no Dragão apesar da vitória",
+                            "body": "Março de 2026: os adeptos do FC Porto mostraram frustração e aumentaram a pressão sobre o treinador.",
+                            "href": "https://www.abola.pt/fc-porto-adeptos-assobios",
+                            "locale": "pt-PT",
+                        }
+                    ],
+                    "provider": "DuckDuckGo",
+                }
+            return {
+                "answer": "No results found.",
+                "citations": [],
+                "hits": [],
+                "provider": "DuckDuckGo",
+            }
+
+        mock_search_internet.side_effect = side_effect
+        result = search_multi(plan["search_query_batches"], match_context=match_context)
+
+        self.assertTrue(result["verified_match"]["narrative_coverage_available"])
+        self.assertTrue(result["verified_match"]["context_coverage_available"])
+        self.assertEqual(len(result["verified_match"]["context_hits"]), 1)
+        self.assertIn("context_sentiment", {attempt["query_category"] for attempt in result["locale_attempts"]})
 
     def test_refusal_lists_locales_attempted(self):
         message = build_match_report_refusal(

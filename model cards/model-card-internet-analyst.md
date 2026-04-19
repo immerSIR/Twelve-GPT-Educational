@@ -18,10 +18,9 @@ Jump to section:
 ## Intended use
 
 The *primary use case* is educational: it shows how to build a wordalisation that retrieves
-live web content and synthesises it into narrative prose, using query classification and
-multi-source search as the retrieval layer. A *secondary use case* is for football fans and
-researchers to obtain narrative summaries of recent matches, player form, injuries, and
-transfer stories from trusted journalism sources.
+live web content and synthesises it into narrative prose, using multi-locale search as the
+retrieval layer. A *secondary use case* is for football fans and researchers to obtain
+narrative match reports from trusted journalism sources.
 
 Professional scouting and transfer decision-making are *out of scope* — the tool synthesises
 public journalism, not proprietary data. Use for non-football topics is also *out of scope*.
@@ -63,55 +62,61 @@ Weszło, Marca, AS, Kicker, Gazzetta, L'Équipe, VI, Fanatik, FilGoal, Yallakora
 ### Query planning
 
 Before searching, the system plans every user question with a single LLM call
-(`PLANNER_PROMPT`). The planner still identifies one of five query types, but it now also
-returns language and retrieval metadata:
+(`PLANNER_PROMPT`). The planner focuses exclusively on match report retrieval,
+identifying the fixture and generating rich, diverse search queries across three
+evidence categories per locale.
 
-| Type | Searches | Output structure |
-|------|----------|-----------------|
-| `match_report` | 3 | Context → first half → turning point → second half → journalist perspectives → **Bottom line:** |
-| `player_performance` | 2 | How they started → key moments → assessment → **Bottom line:** |
-| `injury` | 1 | What happened → severity → return date → team impact → **Bottom line:** |
-| `team_form` | 2 | Recent run narrative → tactical patterns → key contributors → **Bottom line:** |
-| `transfer` | 2 | Current situation → confirmed vs speculated → source credibility → **Bottom line:** |
+The planner returns structured JSON including `user_language`, `answer_language`,
+`absolute_date`, `entities`, `competition_country`, `search_locales`,
+`entity_aliases`, and locale-specific `search_query_batches`. Each batch carries an
+explicit `query_category`: `match_narrative`, `post_match_reaction`, or
+`context_sentiment`, with 2-4 queries per category per locale. Conversation history
+from the last few turns is included so follow-up questions are resolved correctly.
 
-The planner returns structured JSON including `query_type`, `user_language`,
-`answer_language`, `absolute_date`, `entities`, `competition_country`,
-`search_locales`, `entity_aliases`, and locale-specific `search_query_batches`.
-Conversation history from the last few turns is included so follow-up questions are
-resolved correctly.
+| Category | Purpose |
+|----------|---------|
+| `match_narrative` | Tactical breakdowns, formation analysis, key moments, set pieces, individual displays |
+| `post_match_reaction` | Player ratings, manager quotes, journalist verdicts, press conferences |
+| `context_sentiment` | Fan mood, coach pressure, pre-match form, lineup surprises, crowd atmosphere |
 
 ### Retrieval layer
 
-`search_multi()` in `utils/search.py` now executes locale batches in priority order rather
-than one flat English query list. For each locale batch it records `locale_attempts`,
-`winning_locale`, and `source_tier`, then either stops on the first sufficiently verified
-match-report path or falls through the locale chain.
+`search_multi()` in `utils/search.py` now executes every planned batch for recent
+match reports instead of short-circuiting on the first passing locale. Results are
+aggregated into category-specific `evidence_blocks`, a `primary_match_locale`, and
+category-aware `locale_attempts`.
 
 For recent match reports, the search layer applies deterministic verification before any
-answer is generated. Hits are filtered by:
+answer is generated. Verification is now split into three passes:
 
-1. Both teams or accepted aliases
-2. The exact resolved fixture date
-3. Football-only content
-4. Narrative-match coverage availability
+1. **Match narrative verification:** both teams, exact fixture date, football-only content,
+   and genuine match-report or live-commentary signals
+2. **Post-match reaction verification:** both teams, exact fixture date, and verdict or
+   reaction coverage
+3. **Context verification:** at least one fixture club plus season-relevant mood,
+   pressure, or expectation coverage
 
 The search response returns a `verified_match` block with fields such as
 `match_identity_verified`, `match_result_verified`, `narrative_coverage_available`,
-`verified_date`, `verified_score`, `searched_locales`, `winning_locale`,
-`source_tier`, and `verified_source_language`.
+`context_coverage_available`, `verified_date`, `verified_score`, `searched_locales`,
+`winning_locale`, `primary_match_locale`, `source_tier`, `verified_source_language`,
+`accepted_hits`, `reaction_hits`, and `context_hits`.
 
 ### Narrative synthesis (SYSTEM_PROMPT)
 
-The main LLM call receives the combined search results as its context window. The system
-prompt instructs the model to:
+The answer path is now two-stage. A first LLM call structures the evidence into a JSON
+summary (`match_story`, `journalist_verdicts`, `context_mood`, `source_conflicts`,
+`data_vs_web`, and `evidence_gaps`). The final synthesis call then receives the labeled
+evidence blocks plus the structured summary. The system prompt instructs the model to:
 
 1. Answer **only** from the provided web search results — not from parametric knowledge
-2. Write in **flowing paragraphs** — no bullet points, no statistics tables
+2. Write in **guided prose**, allowing short section labels when they improve clarity
 3. **Lead with the narrative**, not the scoreline
 4. Cite sources inline as `[1]`, `[2]`, with "According to The Guardian [1]…" phrasing
 5. Flag **source conflicts**: "Sky Sports [1] reported X; The Athletic [2] suggested Y"
-6. Flag **paywalled content**: "The Athletic's full report requires a subscription…"
-7. Flag **developing coverage**: "Early reports suggest… final verdicts may follow"
+6. Surface **evidence gaps** instead of smoothing them over
+7. Reconcile optional **Twelve data analysis** as `supported`, `contradicted`, `mixed`,
+   or `insufficient evidence`
 8. Write the final answer in the user's language, even when the supporting sources are in another language
 
 The live page no longer depends on fixture-specific few-shot examples. Style is carried by
@@ -119,12 +124,15 @@ the system prompt and the verified search context instead.
 
 ### Quality evaluation (EVALUATION_PROMPT)
 
-After the main answer is generated, a second LLM call scores the answer on three
-dimensions (1–5 each):
+After the main answer is generated, a second LLM call scores the answer on five
+dimensions:
 
 - **Narrative depth:** journalistic prose vs. raw statistics listing
 - **Source grounding:** all claims traceable to search results vs. potential hallucination
 - **Source diversity:** multiple distinct outlets cited vs. single source
+- **Context integration:** whether mood and expectation evidence is used accurately
+- **Data reconciliation:** whether Twelve-vs-web reconciliation is handled correctly
+  (`null` when no Twelve data narrative was present)
 
 The system does not retry simply because prose quality is low. Retry is reserved for cases
 where retrieval found candidate results for a recent match but exact team/date verification

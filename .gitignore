@@ -5,6 +5,7 @@ Lib/*
 Scripts/*
 pyvenv.cfg
 .streamlit/secrets.toml
+.streamlit/secrets*.toml
 etc/*
 share/*
 .DS_Store
@@ -12,7 +13,29 @@ share/*
 .vscode/*
 twelve_chat.bat
 .env
+.env.*
+!.env.example
 user_info.json
 clustering.ipynb
 CLAUDE.md
+
+# Local presentations and private feature notes
+First Presentation.pptx
+INTERNET_ANALYST_FEATURE_OVERVIEW.md
+
+# Credentials and local tokens
+credentials*.json
+token*.json
+service-account*.json
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+
+# Logs and local runtime output
+*.log
+logs/
+.logs/
+tmp/
+temp/
 

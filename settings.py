@@ -47,3 +47,7 @@ LM_STUDIO_EMBEDDING_MODEL = st.secrets.get("LM_STUDIO_EMBEDDING_MODEL", "")
 USE_PERPLEXITY = st.secrets.get("USE_PERPLEXITY", False)
 PERPLEXITY_API_KEY = st.secrets.get("PERPLEXITY_API_KEY", "")
 
+# Twelve Earpiece API secrets
+TWELVE_EARPIECE_ENABLED = st.secrets.get("TWELVE_EARPIECE_ENABLED", False)
+TWELVE_EARPIECE_API_KEY = st.secrets.get("TWELVE_EARPIECE_API_KEY", "")
+

@@ -179,17 +179,52 @@ _NON_FOOTBALL_KEYWORDS = {
     "volleyball",
 }
 
-_NARRATIVE_KEYWORDS = {
-    "ar": ["تقرير", "مباراة", "تعليق مباشر", "مؤتمر صحفي", "تحليل", "ملخص", "ردود فعل", "آراء"],
-    "de": ["spielbericht", "live kommentar", "pressekonferenz", "analyse", "bericht", "reaktion", "meinung", "fazit"],
-    "en": ["match report", "live commentary", "live text commentary", "press conference", "post match", "analysis", "reaction", "verdict", "opinion", "player ratings"],
-    "es": ["crónica", "cronica", "comentario en directo", "rueda de prensa", "análisis", "analisis", "reacción", "reaccion", "opinión", "opinion", "valoraciones"],
-    "fr": ["compte-rendu", "compte rendu", "direct commenté", "conférence de presse", "analyse", "réaction", "reaction", "avis"],
-    "it": ["cronaca", "diretta", "conferenza stampa", "analisi", "pagelle", "reazioni", "giudizio"],
-    "nl": ["wedstrijdverslag", "liveblog", "persconferentie", "analyse", "reactie", "oordeel"],
-    "pl": ["relacja", "komentarz na żywo", "komentarz na zywo", "konferencja prasowa", "analiza", "pomeczowy", "reakcje", "opinie", "oceny"],
-    "pt": ["crónica", "cronica", "relato", "comentário ao vivo", "comentario ao vivo", "conferência de imprensa", "analise", "análise", "reação", "reacao", "opinião", "opiniao", "notas", "pós-jogo", "pos-jogo", "pos jogo"],
-    "tr": ["maç raporu", "mac raporu", "canlı anlatım", "canli anlatim", "basın toplantısı", "basin toplantisi", "analiz", "yorum", "tepki"],
+QUERY_CATEGORY_MATCH_NARRATIVE = "match_narrative"
+QUERY_CATEGORY_POST_MATCH_REACTION = "post_match_reaction"
+QUERY_CATEGORY_CONTEXT_SENTIMENT = "context_sentiment"
+QUERY_CATEGORIES = (
+    QUERY_CATEGORY_MATCH_NARRATIVE,
+    QUERY_CATEGORY_POST_MATCH_REACTION,
+    QUERY_CATEGORY_CONTEXT_SENTIMENT,
+)
+
+_MATCH_NARRATIVE_KEYWORDS = {
+    "ar": ["تقرير", "مباراة", "تعليق مباشر", "تحليل", "ملخص"],
+    "de": ["spielbericht", "live kommentar", "analyse", "bericht", "liveticker"],
+    "en": ["match report", "live commentary", "live text commentary", "analysis", "tactical analysis", "how it played out"],
+    "es": ["crónica", "cronica", "comentario en directo", "análisis", "analisis", "relato"],
+    "fr": ["compte-rendu", "compte rendu", "direct commenté", "analyse", "récit du match", "recit du match"],
+    "it": ["cronaca", "diretta", "analisi", "resoconto"],
+    "nl": ["wedstrijdverslag", "liveblog", "analyse", "verslag"],
+    "pl": ["relacja", "komentarz na żywo", "komentarz na zywo", "analiza", "przebieg meczu"],
+    "pt": ["crónica", "cronica", "relato", "comentário ao vivo", "comentario ao vivo", "analise", "análise"],
+    "tr": ["maç raporu", "mac raporu", "canlı anlatım", "canli anlatim", "analiz", "mac ozeti", "maç özeti"],
+}
+
+_POST_MATCH_REACTION_KEYWORDS = {
+    "ar": ["ردود فعل", "آراء", "مؤتمر صحفي", "تقييمات", "تصريحات"],
+    "de": ["reaktion", "meinung", "fazit", "pressekonferenz", "noten", "stimmen"],
+    "en": ["post match", "reaction", "verdict", "opinion", "player ratings", "press conference", "quotes", "ratings"],
+    "es": ["reacción", "reaccion", "opinión", "opinion", "valoraciones", "rueda de prensa", "declaraciones"],
+    "fr": ["réaction", "reaction", "avis", "conférence de presse", "notes", "déclarations", "declarations"],
+    "it": ["reazioni", "giudizio", "pagelle", "conferenza stampa", "dichiarazioni"],
+    "nl": ["reactie", "oordeel", "persconferentie", "spelersbeoordelingen", "cijfers"],
+    "pl": ["reakcje", "opinie", "oceny", "konferencja prasowa", "wypowiedzi"],
+    "pt": ["reação", "reacao", "opinião", "opiniao", "notas", "pós-jogo", "pos-jogo", "pos jogo", "conferência de imprensa", "declaracoes", "declarações"],
+    "tr": ["tepki", "yorum", "basın toplantısı", "basin toplantisi", "puanlar", "aciklamalar", "açıklamalar"],
+}
+
+_CONTEXT_SENTIMENT_KEYWORDS = {
+    "ar": ["احتجاج", "مطالبة برحيل المدرب", "أجواء", "توقعات", "أزمة", "جماهير", "ضغط", "ترحيب", "حماس", "تصريحات", "مقابلة", "تعافي", "عودة", "غياب", "تأثير", "بديل"],
+    "de": ["druck", "krise", "proteste fans", "stimmung", "erwartungen", "entlassung", "unruhe", "pfiffe", "begeisterung", "willkommen", "interview", "eingewöhnung", "eingewohnung", "fan reaktion", "genesung", "comeback", "ausfall", "ersatz", "auswirkung", "reha"],
+    "en": ["fan protest", "booing", "booed", "boo", "under pressure", "pressure", "sack", "crisis", "atmosphere", "unrest", "expectations", "dressing room", "fan reaction", "morale", "fan excitement", "welcome", "adaptation", "settling in", "interview", "social media", "fan opinion", "reception", "buzz", "recovery", "comeback", "rehab", "rehabilitation", "absence", "impact", "replacement", "without him", "missed", "return to training", "lifestyle"],
+    "es": ["presion", "crisis", "protestas aficionados", "ambiente", "expectativas", "destitucion", "abucheos", "entusiasmo", "bienvenida", "adaptacion", "entrevista", "reaccion aficion", "ilusion", "recuperacion", "regreso", "ausencia", "impacto", "sustituto", "rehabilitacion"],
+    "fr": ["pression", "crise", "protestations supporters", "ambiance", "attentes", "limogeage", "sifflets", "enthousiasme", "accueil", "adaptation", "interview", "reaction supporters", "recuperation", "retour", "absence", "impact", "remplacant", "reeducation"],
+    "it": ["pressione", "crisi", "proteste tifosi", "atmosfera", "aspettative", "esonero", "contestazione", "entusiasmo", "accoglienza", "adattamento", "intervista", "reazione tifosi", "recupero", "ritorno", "assenza", "impatto", "sostituto", "riabilitazione"],
+    "nl": ["druk", "crisis", "protesterende fans", "sfeer", "verwachtingen", "ontslag", "boegeroep", "enthousiasme", "welkom", "aanpassing", "interview", "fan reactie", "herstel", "comeback", "afwezigheid", "impact", "vervanger", "revalidatie"],
+    "pl": ["kryzys", "protesty kibicow", "atmosfera", "oczekiwania", "zwolnienie trenera", "presja", "gwizdy", "entuzjazm", "powitanie", "adaptacja", "wywiad", "reakcja kibicow", "powrot", "rehabilitacja", "nieobecnosc", "wplyw", "zastepstwo"],
+    "pt": ["pressao", "crise", "protestos adeptos", "ambiente", "expectativas", "demissao", "assobios", "entusiasmo", "recepcao", "adaptacao", "entrevista", "reacao adeptos", "euforia", "recuperacao", "regresso", "ausencia", "impacto", "substituto", "reabilitacao"],
+    "tr": ["baski", "kriz", "taraftar protestosu", "atmosfer", "beklentiler", "kovulma", "yuhalama", "heyecan", "karsilama", "uyum", "roportaj", "taraftar tepkisi", "iyilesme", "donus", "yokluk", "etki", "yedek", "rehabilitasyon"],
 }
 
 _TEAM_PREFIXES = {"ac", "afc", "cf", "cd", "fc", "sc"}
@@ -639,40 +674,98 @@ def _default_source_tier(locale: str) -> str:
     return "open_web_local"
 
 
-def _default_queries_for_locale(locale: str, query_type: str, entities: list, absolute_date: str | None) -> list[str]:
+def _normalise_query_category(category: str | None) -> str:
+    category = _normalise_key(category or "")
+    if category == _normalise_key(QUERY_CATEGORY_POST_MATCH_REACTION):
+        return QUERY_CATEGORY_POST_MATCH_REACTION
+    if category == _normalise_key(QUERY_CATEGORY_CONTEXT_SENTIMENT):
+        return QUERY_CATEGORY_CONTEXT_SENTIMENT
+    return QUERY_CATEGORY_MATCH_NARRATIVE
+
+
+def _season_token_for_date(absolute_date: str | None, today: date | None = None) -> str:
+    today = today or date.today()
+    reference = date.fromisoformat(absolute_date) if absolute_date else today
+    if reference.month < 8:
+        start_year = reference.year - 1
+        end_year = reference.year
+    else:
+        start_year = reference.year
+        end_year = reference.year + 1
+    return f"{start_year}/{str(end_year)[2:]}"
+
+
+def _default_queries_for_locale(
+    locale: str,
+    entities: list,
+    absolute_date: str | None,
+    query_category: str = QUERY_CATEGORY_MATCH_NARRATIVE,
+) -> list[str]:
     names = [entity.get("name", "") for entity in entities if entity.get("name")]
     joined = " vs ".join(names[:2]) if len(names) >= 2 else " ".join(names) or "football"
-    if query_type == "match_report" and absolute_date:
-        language = locale_language(locale)
-        team_a = names[0] if len(names) >= 1 else joined
-        team_b = names[1] if len(names) >= 2 else ""
-        locale_terms = {
-            "en": [
-                "match report tactical analysis",
-                "post match reaction verdict player ratings",
-                "opinion analysis how the game was judged",
+    language = locale_language(locale)
+    team_a = names[0] if len(names) >= 1 else joined
+    team_b = names[1] if len(names) >= 2 else ""
+    date_fragment = absolute_date or _season_token_for_date(None)
+    season_token = _season_token_for_date(absolute_date)
+    locale_terms = {
+        "en": {
+            QUERY_CATEGORY_MATCH_NARRATIVE: [
+                f"{team_a} vs {team_b} {date_fragment} match report tactical analysis",
+                f"{team_b} vs {team_a} {date_fragment} live commentary analysis",
+                f"{team_a} {team_b} {date_fragment} how the game was judged",
             ],
-            "pt": [
-                "cronica analise tatica",
-                "reacoes opiniao notas ao jogo",
-                "analise pos jogo desempenho",
+            QUERY_CATEGORY_POST_MATCH_REACTION: [
+                f"{team_a} vs {team_b} {date_fragment} post match reaction verdict",
+                f"{team_b} vs {team_a} {date_fragment} player ratings opinion",
+                f"{team_a} {team_b} {date_fragment} press conference quotes",
             ],
-            "pl": [
-                "relacja analiza taktyczna",
-                "reakcje opinie oceny po meczu",
-                "analiza pomeczowa ocena wystepu",
+            QUERY_CATEGORY_CONTEXT_SENTIMENT: [
+                f"{team_a} fan reaction atmosphere {season_token}",
+                f"{team_a} coach under pressure crisis {season_token}",
+                f"{team_a} expectations supporters unrest {season_token}",
             ],
-        }
-        terms = locale_terms.get(language, locale_terms["en"])
-        queries = [
-            f"{team_a} vs {team_b} {absolute_date} {terms[0]}".strip(),
-            f"{team_b} vs {team_a} {absolute_date} {terms[1]}".strip(),
-            f"{team_a} {team_b} {absolute_date} {terms[2]}".strip(),
-        ]
-        return _unique(queries)
-    if absolute_date:
-        return [f"{joined} {absolute_date} football"]
-    return [f"{joined} football"]
+        },
+        "pt": {
+            QUERY_CATEGORY_MATCH_NARRATIVE: [
+                f"{team_a} vs {team_b} {date_fragment} cronica analise tatica",
+                f"{team_b} vs {team_a} {date_fragment} relato comentario ao vivo",
+                f"{team_a} {team_b} {date_fragment} como foi o jogo analise",
+            ],
+            QUERY_CATEGORY_POST_MATCH_REACTION: [
+                f"{team_a} vs {team_b} {date_fragment} reacoes opiniao pos-jogo",
+                f"{team_b} vs {team_a} {date_fragment} notas ao jogo declaracoes",
+                f"{team_a} {team_b} {date_fragment} conferencia de imprensa reacao",
+            ],
+            QUERY_CATEGORY_CONTEXT_SENTIMENT: [
+                f"{team_a} adeptos reacao ambiente {season_token}",
+                f"{team_a} treinador pressao crise {season_token}",
+                f"{team_a} expectativas protestos adeptos {season_token}",
+            ],
+        },
+        "pl": {
+            QUERY_CATEGORY_MATCH_NARRATIVE: [
+                f"{team_a} vs {team_b} {date_fragment} relacja analiza taktyczna",
+                f"{team_b} vs {team_a} {date_fragment} komentarz na zywo analiza",
+                f"{team_a} {team_b} {date_fragment} jak wygladal mecz",
+            ],
+            QUERY_CATEGORY_POST_MATCH_REACTION: [
+                f"{team_a} vs {team_b} {date_fragment} reakcje opinie po meczu",
+                f"{team_b} vs {team_a} {date_fragment} oceny zawodnikow",
+                f"{team_a} {team_b} {date_fragment} konferencja prasowa wypowiedzi",
+            ],
+            QUERY_CATEGORY_CONTEXT_SENTIMENT: [
+                f"{team_a} reakcja kibicow atmosfera {season_token}",
+                f"{team_a} trener presja kryzys {season_token}",
+                f"{team_a} oczekiwania protesty kibicow {season_token}",
+            ],
+        },
+    }
+    queries = locale_terms.get(language, locale_terms["en"]).get(
+        query_category,
+        locale_terms["en"][QUERY_CATEGORY_MATCH_NARRATIVE],
+    )
+    return _unique(queries)
 
 
 def _normalise_entity_aliases(entity_aliases: dict | None) -> dict[str, list[str]]:
@@ -691,7 +784,6 @@ def normalise_query_plan(raw_plan: dict | None, user_query: str, today: date | N
     today = today or date.today()
     raw_plan = raw_plan or {}
 
-    query_type = raw_plan.get("query_type") or "match_report"
     user_language = (raw_plan.get("user_language") or "en").lower()
     answer_language = (raw_plan.get("answer_language") or user_language or "en").lower()
     competition_country = raw_plan.get("competition_country")
@@ -728,7 +820,8 @@ def normalise_query_plan(raw_plan: dict | None, user_query: str, today: date | N
         )
 
     raw_batches = raw_plan.get("search_query_batches") or []
-    batches_by_locale = {}
+    search_query_batches = []
+    batch_index_by_key = {}
     for batch in raw_batches:
         locale = batch.get("locale")
         locale = (
@@ -739,25 +832,47 @@ def normalise_query_plan(raw_plan: dict | None, user_query: str, today: date | N
         queries = _unique([_normalise_space(query) for query in batch.get("queries", []) if query])
         if not locale or not queries:
             continue
-        batches_by_locale[locale] = {
-            "locale": locale,
-            "queries": queries,
-            "source_tier": batch.get("source_tier") or _default_source_tier(locale),
-        }
-
-    search_query_batches = []
-    for locale in search_locales:
-        batch = batches_by_locale.get(locale)
-        if batch is None:
-            batch = {
+        source_tier = batch.get("source_tier") or _default_source_tier(locale)
+        query_category = _normalise_query_category(batch.get("query_category"))
+        key = (locale, query_category, source_tier)
+        existing_index = batch_index_by_key.get(key)
+        if existing_index is not None:
+            search_query_batches[existing_index]["queries"] = _unique(
+                [*search_query_batches[existing_index]["queries"], *queries]
+            )
+            continue
+        batch_index_by_key[key] = len(search_query_batches)
+        search_query_batches.append(
+            {
                 "locale": locale,
-                "queries": _default_queries_for_locale(locale, query_type, entities, absolute_date),
-                "source_tier": _default_source_tier(locale),
+                "queries": queries,
+                "source_tier": source_tier,
+                "query_category": query_category,
             }
-        search_query_batches.append(batch)
+        )
+
+    for locale in search_locales:
+        for query_category in QUERY_CATEGORIES:
+            if any(
+                batch["locale"] == locale and batch["query_category"] == query_category
+                for batch in search_query_batches
+            ):
+                continue
+            search_query_batches.append(
+                {
+                    "locale": locale,
+                    "queries": _default_queries_for_locale(
+                        locale,
+                        entities,
+                        absolute_date,
+                        query_category=query_category,
+                    ),
+                    "source_tier": _default_source_tier(locale),
+                    "query_category": query_category,
+                }
+            )
 
     return {
-        "query_type": query_type,
         "user_language": user_language,
         "answer_language": answer_language,
         "absolute_date": absolute_date,
@@ -770,9 +885,6 @@ def normalise_query_plan(raw_plan: dict | None, user_query: str, today: date | N
 
 
 def build_match_context_from_plan(query_plan: dict, fallback_query: str = "") -> dict | None:
-    if query_plan.get("query_type") != "match_report":
-        return None
-
     team_names = [
         entity.get("name")
         for entity in query_plan.get("entities", [])
@@ -936,28 +1048,223 @@ def _extract_ordered_score(
     return None
 
 
-def _is_narrative_hit(hit: dict, languages: list[str] | None = None) -> bool:
+def _keyword_languages(hit: dict, languages: list[str] | None = None) -> list[str]:
+    return _unique([*(languages or []), locale_language(hit.get("locale")), "en"])
+
+
+def _matches_keyword_map(
+    hit: dict,
+    keyword_map: dict[str, list[str]],
+    languages: list[str] | None = None,
+) -> bool:
     text = _normalise_key(_hit_text(hit))
+    keyword_pool = []
+    for language in _keyword_languages(hit, languages=languages):
+        keyword_pool.extend(keyword_map.get(language, []))
+    return any(_normalise_key(keyword) in text for keyword in keyword_pool)
+
+
+def _is_supported_journalism_hit(hit: dict) -> bool:
     domain = _extract_domain(hit.get("href", ""))
     source_tier = hit.get("source_tier")
     if domain in _STATS_DOMAINS:
         return False
-    if domain not in _JOURNALISM_DOMAINS and source_tier != "open_web_local":
+    if domain not in _JOURNALISM_DOMAINS and source_tier not in ("open_web_local", "english_fallback"):
         return False
+    return True
 
-    keyword_languages = _unique([*(languages or []), locale_language(hit.get("locale")), "en"])
-    keyword_pool = []
-    for language in keyword_languages:
-        keyword_pool.extend(_NARRATIVE_KEYWORDS.get(language, []))
-    if any(_normalise_key(keyword) in text for keyword in keyword_pool):
-        return True
 
-    if "player ratings" in text or "pagelle" in text:
-        return True
-    if "analysis" in text and domain not in _STATS_DOMAINS:
-        return True
+_NARRATIVE_FALLBACK_PATTERNS = [
+    "tactical analysis", "analise tatica", "análise tática",
+    "player ratings", "notas dos jogadores", "puntuaciones",
+    "how it played out", "match review", "game report",
+    "match recap", "post-match", "pós-jogo", "pos jogo",
+    "result reaction", "resultado e reação",
+]
 
-    return False
+
+def _is_match_narrative_hit(hit: dict, languages: list[str] | None = None) -> bool:
+    if not _is_supported_journalism_hit(hit):
+        return False
+    if _matches_keyword_map(hit, _MATCH_NARRATIVE_KEYWORDS, languages=languages):
+        return True
+    text = _normalise_key(_hit_text(hit))
+    return any(pattern in text for pattern in _NARRATIVE_FALLBACK_PATTERNS)
+
+
+def _is_reaction_hit(hit: dict, languages: list[str] | None = None) -> bool:
+    if not _is_supported_journalism_hit(hit):
+        return False
+    return _matches_keyword_map(hit, _POST_MATCH_REACTION_KEYWORDS, languages=languages)
+
+
+def _is_context_hit(hit: dict, languages: list[str] | None = None) -> bool:
+    if not _is_supported_journalism_hit(hit):
+        return False
+    return _matches_keyword_map(hit, _CONTEXT_SENTIMENT_KEYWORDS, languages=languages)
+
+
+def _season_tokens(reference_date: date | None = None) -> set[str]:
+    reference_date = reference_date or date.today()
+    if reference_date.month < 8:
+        current_start = reference_date.year - 1
+        current_end = reference_date.year
+    else:
+        current_start = reference_date.year
+        current_end = reference_date.year + 1
+    previous_start = current_start - 1
+    previous_end = current_start
+
+    season_ranges = [
+        (current_start, current_end),
+        (previous_start, previous_end),
+    ]
+    tokens = set()
+    for start_year, end_year in season_ranges:
+        tokens.update(
+            {
+                f"{start_year}/{str(end_year)[2:]}",
+                f"{start_year}-{str(end_year)[2:]}",
+                f"{start_year}/{end_year}",
+                f"{start_year}-{end_year}",
+            }
+        )
+    return tokens
+
+
+def _match_context_languages(match_context: dict | None) -> list[str]:
+    return _unique(
+        [locale_language(locale) for locale in (match_context or {}).get("search_locales", [])]
+        + [((match_context or {}).get("answer_language") or "en")]
+    )
+
+
+def _enrich_fixture_hit(
+    hit: dict,
+    match_context: dict,
+    languages: list[str] | None = None,
+    today: date | None = None,
+) -> tuple[dict | None, dict | None]:
+    team_a_aliases = set(match_context.get("team_a_aliases", []))
+    team_b_aliases = set(match_context.get("team_b_aliases", []))
+    requested_date = match_context.get("requested_date")
+    text = _hit_text(hit)
+    if _is_non_football_hit(hit):
+        return None, {
+            "title": hit.get("title", ""),
+            "href": hit.get("href", ""),
+            "reason": "non_football_result",
+        }
+    if _is_generic_team_page(hit, team_a_aliases, team_b_aliases):
+        return None, {
+            "title": hit.get("title", ""),
+            "href": hit.get("href", ""),
+            "reason": "generic_team_page",
+        }
+    if not _text_mentions_aliases(text, team_a_aliases):
+        return None, {
+            "title": hit.get("title", ""),
+            "href": hit.get("href", ""),
+            "reason": "missing_team_a",
+        }
+    if not _text_mentions_aliases(text, team_b_aliases):
+        return None, {
+            "title": hit.get("title", ""),
+            "href": hit.get("href", ""),
+            "reason": "missing_team_b",
+        }
+    if requested_date:
+        combined_text = f"{text} {hit.get('href', '')}"
+        date_found = _text_contains_target_date(
+            combined_text,
+            requested_date,
+            today=today,
+            languages=languages,
+        )
+        if not date_found:
+            # Only apply the recent-match grace period when the article has NO
+            # parseable date at all (relative phrasing like "last night"). If the
+            # text mentions a different concrete date, reject — the article is
+            # about another match.
+            target = date.fromisoformat(requested_date)
+            days_ago = ((today or date.today()) - target).days
+            parsed_dates = _search_dates(
+                combined_text,
+                today or date.today(),
+                languages=_unique([*(languages or []), "en"]),
+            )
+            within_grace = 0 <= days_ago <= 14 and not parsed_dates
+            if not within_grace:
+                return None, {
+                    "title": hit.get("title", ""),
+                    "href": hit.get("href", ""),
+                    "reason": "wrong_or_missing_date",
+                }
+    return (
+        {
+            **hit,
+            "domain": _extract_domain(hit.get("href", "")),
+            "verified_source_language": locale_language(hit.get("locale") or hit.get("source_locale")),
+        },
+        None,
+    )
+
+
+def _has_recent_context_window(
+    text: str,
+    match_context: dict,
+    languages: list[str] | None = None,
+    today: date | None = None,
+) -> bool:
+    today = today or date.today()
+    raw_text = (text or "").casefold()
+    reference_dates = [today]
+    if match_context.get("requested_date"):
+        reference_dates.append(date.fromisoformat(match_context["requested_date"]))
+    if any(token in raw_text for token in _season_tokens(today)):
+        return True
+    for reference_date in reference_dates:
+        if any(token in raw_text for token in _season_tokens(reference_date)):
+            return True
+    parsed_dates = _search_dates(text, today, languages=_unique([*(languages or []), "en"]))
+    return any(
+        abs((parsed_date - reference_date).days) <= 90
+        for parsed_date in parsed_dates
+        for reference_date in reference_dates
+    )
+
+
+def _source_priority(source_tier: str | None) -> int:
+    if source_tier == "curated_local":
+        return 3
+    if source_tier == "english_fallback":
+        return 2
+    if source_tier == "open_web_local":
+        return 1
+    return 0
+
+
+def _rank_and_dedupe_hits(hits: list[dict], limit: int | None = None) -> list[dict]:
+    deduped = {}
+    for hit in hits:
+        dedupe_key = hit.get("href") or _normalise_key(f"{hit.get('title', '')} {hit.get('body', '')}")
+        incumbent = deduped.get(dedupe_key)
+        if incumbent is None or (
+            _source_priority(hit.get("source_tier")) > _source_priority(incumbent.get("source_tier"))
+        ):
+            deduped[dedupe_key] = hit
+
+    ranked = sorted(
+        deduped.values(),
+        key=lambda hit: (
+            -_source_priority(hit.get("source_tier")),
+            hit.get("search_index", 99),
+            -len(_normalise_key(_hit_text(hit))),
+        ),
+    )
+    if limit is not None:
+        return ranked[:limit]
+    return ranked
 
 
 def verify_match_hits(hits: list, match_context: dict | None, today: date | None = None) -> dict | None:
@@ -965,20 +1272,129 @@ def verify_match_hits(hits: list, match_context: dict | None, today: date | None
         return None
 
     today = today or date.today()
-    team_a_aliases = set(match_context.get("team_a_aliases", []))
-    team_b_aliases = set(match_context.get("team_b_aliases", []))
-    requested_date = match_context.get("requested_date")
     team_a = match_context.get("team_a", "")
     team_b = match_context.get("team_b", "")
-    languages = _unique(
-        [locale_language(locale) for locale in match_context.get("search_locales", [])]
-        + [match_context.get("answer_language", "en")]
-    )
+    languages = _match_context_languages(match_context)
 
     accepted_hits = []
+    fixture_hits = []
     rejected_hits = []
     score_counter = Counter()
-    source_language_counter = Counter()
+    fixture_source_language_counter = Counter()
+    accepted_source_language_counter = Counter()
+
+    for hit in hits:
+        enriched_hit, rejected_hit = _enrich_fixture_hit(
+            hit,
+            match_context,
+            languages=languages,
+            today=today,
+        )
+        if rejected_hit:
+            rejected_hits.append(rejected_hit)
+            continue
+
+        enriched_hit["is_match_narrative"] = _is_match_narrative_hit(hit, languages=languages)
+        fixture_hits.append(enriched_hit)
+        if enriched_hit["verified_source_language"]:
+            fixture_source_language_counter[enriched_hit["verified_source_language"]] += 1
+        if score := _extract_ordered_score(
+            _hit_text(hit),
+            team_a,
+            team_b,
+            set(match_context.get("team_a_aliases", [])),
+            set(match_context.get("team_b_aliases", [])),
+        ):
+            score_counter[score] += 1
+        if enriched_hit["is_match_narrative"]:
+            accepted_hits.append(enriched_hit)
+            if enriched_hit["verified_source_language"]:
+                accepted_source_language_counter[enriched_hit["verified_source_language"]] += 1
+
+    verified_score = score_counter.most_common(1)[0][0] if score_counter else None
+    verified_source_language = (
+        accepted_source_language_counter.most_common(1)[0][0]
+        if accepted_source_language_counter
+        else (
+            fixture_source_language_counter.most_common(1)[0][0]
+            if fixture_source_language_counter
+            else None
+        )
+    )
+    ranked_fixture_hits = _rank_and_dedupe_hits(fixture_hits)
+    ranked_accepted_hits = _rank_and_dedupe_hits(accepted_hits)
+
+    return {
+        **match_context,
+        "raw_hit_count": len(hits),
+        "match_identity_verified": bool(ranked_fixture_hits),
+        "match_result_verified": bool(verified_score),
+        "narrative_coverage_available": bool(ranked_accepted_hits),
+        "verified_date": match_context.get("requested_date") if ranked_fixture_hits else None,
+        "verified_score": verified_score,
+        "accepted_hits": ranked_accepted_hits,
+        "fixture_hits": ranked_fixture_hits,
+        "rejected_hits": rejected_hits,
+        "verified_source_language": verified_source_language,
+    }
+
+
+def verify_reaction_hits(
+    hits: list,
+    match_context: dict | None,
+    today: date | None = None,
+) -> dict | None:
+    if not match_context:
+        return None
+
+    today = today or date.today()
+    languages = _match_context_languages(match_context)
+    accepted_hits = []
+    rejected_hits = []
+    for hit in hits:
+        enriched_hit, rejected_hit = _enrich_fixture_hit(
+            hit,
+            match_context,
+            languages=languages,
+            today=today,
+        )
+        if rejected_hit:
+            rejected_hits.append(rejected_hit)
+            continue
+        if not _is_reaction_hit(hit, languages=languages):
+            rejected_hits.append(
+                {
+                    "title": hit.get("title", ""),
+                    "href": hit.get("href", ""),
+                    "reason": "not_post_match_reaction",
+                }
+            )
+            continue
+        enriched_hit["is_post_match_reaction"] = True
+        accepted_hits.append(enriched_hit)
+
+    ranked_hits = _rank_and_dedupe_hits(accepted_hits)
+    return {
+        "accepted_hits": ranked_hits,
+        "rejected_hits": rejected_hits,
+        "reaction_coverage_available": bool(ranked_hits),
+    }
+
+
+def verify_context_hits(
+    hits: list,
+    match_context: dict | None,
+    today: date | None = None,
+) -> dict | None:
+    if not match_context:
+        return None
+
+    today = today or date.today()
+    team_a_aliases = set(match_context.get("team_a_aliases", []))
+    team_b_aliases = set(match_context.get("team_b_aliases", []))
+    languages = _match_context_languages(match_context)
+    accepted_hits = []
+    rejected_hits = []
 
     for hit in hits:
         text = _hit_text(hit)
@@ -1000,69 +1416,56 @@ def verify_match_hits(hits: list, match_context: dict | None, today: date | None
                 }
             )
             continue
-        if not _text_mentions_aliases(text, team_a_aliases):
+        mentions_team = _text_mentions_aliases(text, team_a_aliases) or _text_mentions_aliases(
+            text,
+            team_b_aliases,
+        )
+        if not mentions_team:
             rejected_hits.append(
                 {
                     "title": hit.get("title", ""),
                     "href": hit.get("href", ""),
-                    "reason": "missing_team_a",
+                    "reason": "missing_fixture_club",
                 }
             )
             continue
-        if not _text_mentions_aliases(text, team_b_aliases):
+        if not _is_context_hit(hit, languages=languages):
             rejected_hits.append(
                 {
                     "title": hit.get("title", ""),
                     "href": hit.get("href", ""),
-                    "reason": "missing_team_b",
+                    "reason": "not_context_sentiment",
                 }
             )
             continue
-        if requested_date and not _text_contains_target_date(
+        if not _has_recent_context_window(
             f"{text} {hit.get('href', '')}",
-            requested_date,
-            today=today,
+            match_context,
             languages=languages,
+            today=today,
         ):
             rejected_hits.append(
                 {
                     "title": hit.get("title", ""),
                     "href": hit.get("href", ""),
-                    "reason": "wrong_or_missing_date",
+                    "reason": "not_season_relevant",
                 }
             )
             continue
+        accepted_hits.append(
+            {
+                **hit,
+                "domain": _extract_domain(hit.get("href", "")),
+                "verified_source_language": locale_language(hit.get("locale") or hit.get("source_locale")),
+                "is_context_hit": True,
+            }
+        )
 
-        enriched_hit = {
-            **hit,
-            "domain": _extract_domain(hit.get("href", "")),
-            "is_narrative": _is_narrative_hit(hit, languages=languages),
-            "verified_source_language": locale_language(hit.get("locale") or hit.get("source_locale")),
-        }
-        accepted_hits.append(enriched_hit)
-        if enriched_hit["verified_source_language"]:
-            source_language_counter[enriched_hit["verified_source_language"]] += 1
-        if score := _extract_ordered_score(
-            text, team_a, team_b, team_a_aliases, team_b_aliases
-        ):
-            score_counter[score] += 1
-
-    verified_score = score_counter.most_common(1)[0][0] if score_counter else None
-    verified_source_language = (
-        source_language_counter.most_common(1)[0][0] if source_language_counter else None
-    )
-
+    ranked_hits = _rank_and_dedupe_hits(accepted_hits)
     return {
-        **match_context,
-        "raw_hit_count": len(hits),
-        "match_identity_verified": bool(accepted_hits),
-        "match_result_verified": bool(verified_score),
-        "narrative_coverage_available": any(hit["is_narrative"] for hit in accepted_hits),
-        "verified_date": requested_date if accepted_hits else None,
-        "verified_score": verified_score,
-        "accepted_hits": accepted_hits,
+        "accepted_hits": ranked_hits,
         "rejected_hits": rejected_hits,
-        "verified_source_language": verified_source_language,
+        "context_coverage_available": bool(ranked_hits),
     }
 
 
@@ -1145,6 +1548,42 @@ def _format_hits_for_context(hits: list) -> str:
             section.append(f"{title}: {body}".strip(": "))
         sections.append("\n".join(section))
     return "\n\n".join(sections) if sections else "No verified results found."
+
+
+def _format_evidence_blocks_for_context(evidence_blocks: dict[str, list[dict]]) -> str:
+    section_titles = {
+        QUERY_CATEGORY_MATCH_NARRATIVE: "Match narrative evidence",
+        QUERY_CATEGORY_POST_MATCH_REACTION: "Post-match reaction evidence",
+        QUERY_CATEGORY_CONTEXT_SENTIMENT: "Context & mood evidence",
+    }
+    sections = []
+    for query_category in QUERY_CATEGORIES:
+        hits = evidence_blocks.get(query_category, [])
+        label = section_titles[query_category]
+        section = [f"--- {label} ---"]
+        if hits:
+            section.append(_format_hits_for_context(hits))
+        else:
+            section.append("No evidence found.")
+        sections.append("\n".join(section))
+    return "\n\n".join(sections)
+
+
+def _format_raw_sections_by_category(raw_sections_by_category: dict[str, list[str]]) -> str:
+    section_titles = {
+        QUERY_CATEGORY_MATCH_NARRATIVE: "Raw match narrative searches",
+        QUERY_CATEGORY_POST_MATCH_REACTION: "Raw post-match reaction searches",
+        QUERY_CATEGORY_CONTEXT_SENTIMENT: "Raw context & mood searches",
+    }
+    sections = []
+    for query_category in QUERY_CATEGORIES:
+        raw_sections = raw_sections_by_category.get(query_category, [])
+        if not raw_sections:
+            continue
+        sections.append(
+            "\n".join([f"--- {section_titles[query_category]} ---", "\n\n".join(raw_sections)])
+        )
+    return "\n\n".join(sections) if sections else "No results found."
 
 
 def _dedupe_keep_order(values: list[str]) -> list[str]:
@@ -1359,6 +1798,7 @@ def _coerce_search_batches(queries: list) -> list[dict]:
                 "locale": "en",
                 "queries": _unique([_normalise_space(query) for query in queries if query]),
                 "source_tier": "english_fallback",
+                "query_category": QUERY_CATEGORY_MATCH_NARRATIVE,
             }
         ]
 
@@ -1380,20 +1820,10 @@ def _coerce_search_batches(queries: list) -> list[dict]:
                 "locale": locale,
                 "queries": batch_queries,
                 "source_tier": batch.get("source_tier") or _default_source_tier(locale),
+                "query_category": _normalise_query_category(batch.get("query_category")),
             }
         )
     return batches
-
-
-def _batch_rank(verified_match: dict | None, raw_answer: str) -> tuple:
-    if not verified_match:
-        return (0, 0, 0, raw_answer != "No results found.")
-    return (
-        int(bool(verified_match.get("narrative_coverage_available"))),
-        int(bool(verified_match.get("match_identity_verified"))),
-        len(verified_match.get("accepted_hits", [])),
-        int(raw_answer != "No results found."),
-    )
 
 
 def search_multi(queries: list, match_context: dict | None = None) -> dict:
@@ -1405,20 +1835,100 @@ def search_multi(queries: list, match_context: dict | None = None) -> dict:
 
     search_batches = _coerce_search_batches(queries)
     locale_attempts = []
-    best_result = {
-        "answer": "No results found.",
-        "raw_answer": "No results found.",
-        "citations": [],
-        "provider": "",
-        "verified_match": None,
-        "winning_locale": None,
-        "source_tier": None,
-    }
-    best_rank = (-1, -1, -1, -1)
+    provider_order = []
+
+    if not match_context:
+        raw_sections = []
+        citations = []
+        winning_locale = None
+        source_tier = None
+        all_hits_by_category = {category: [] for category in QUERY_CATEGORIES}
+        for batch in search_batches:
+            locale = batch["locale"]
+            query_category = batch["query_category"]
+            batch_hits = []
+            batch_has_results = False
+            provider = ""
+            for i, query in enumerate(batch["queries"], 1):
+                result = search_internet(query, locale=locale, source_tier=batch["source_tier"])
+                if result["answer"] and result["answer"] != "No results found.":
+                    raw_sections.append(f"=== Search {i}: {query} ===\n{result['answer']}")
+                    batch_has_results = True
+                citations.extend(result.get("citations", []))
+                for hit in result.get("hits", []):
+                    enriched_hit = {
+                        **hit,
+                        "search_index": i,
+                        "search_query": query,
+                        "locale": hit.get("locale") or locale,
+                        "source_tier": batch["source_tier"],
+                        "query_category": query_category,
+                        "domain": _extract_domain(hit.get("href", "")),
+                    }
+                    batch_hits.append(enriched_hit)
+                if not provider:
+                    provider = result.get("provider", "")
+            if provider:
+                provider_order.append(provider)
+            all_hits_by_category.setdefault(query_category, []).extend(batch_hits)
+            locale_attempts.append(
+                {
+                    "locale": locale,
+                    "queries": batch["queries"],
+                    "provider": provider,
+                    "source_tier": batch["source_tier"],
+                    "query_category": query_category,
+                    "raw_hit_count": len(batch_hits),
+                    "accepted_hit_count": len(batch_hits),
+                    "match_identity_verified": False,
+                    "narrative_coverage_available": False,
+                    "reaction_coverage_available": False,
+                    "context_coverage_available": False,
+                }
+            )
+            if batch_has_results and winning_locale is None:
+                winning_locale = locale
+                source_tier = batch["source_tier"]
+
+        evidence_blocks = {
+            category: _rank_and_dedupe_hits(hits, limit=6)
+            for category, hits in all_hits_by_category.items()
+        }
+        ordered_evidence_hits = [
+            hit
+            for category in QUERY_CATEGORIES
+            for hit in evidence_blocks.get(category, [])
+        ]
+        evidence_citations = _dedupe_keep_order(
+            [hit.get("href", "") for hit in ordered_evidence_hits if hit.get("href")]
+        )
+        if not evidence_citations:
+            evidence_citations = _dedupe_keep_order(citations)
+
+        combined_raw = "\n\n".join(raw_sections) if raw_sections else "No results found."
+        return {
+            "answer": combined_raw,
+            "raw_answer": combined_raw,
+            "citations": evidence_citations or _dedupe_keep_order(citations),
+            "provider": " + ".join(_unique(provider_order)),
+            "verified_match": None,
+            "locale_attempts": locale_attempts,
+            "winning_locale": winning_locale,
+            "primary_match_locale": winning_locale,
+            "source_tier": source_tier,
+            "evidence_blocks": evidence_blocks,
+        }
+
+    raw_sections_by_category = {category: [] for category in QUERY_CATEGORIES}
+    raw_hits_by_category = {category: [] for category in QUERY_CATEGORIES}
+    best_match_locale = None
+    best_match_source_tier = None
+    best_match_rank = (-1, -1, -1, -1)
 
     for batch in search_batches:
         locale = batch["locale"]
         source_tier = batch["source_tier"]
+        query_category = batch["query_category"]
         raw_sections = []
         citations = []
         hits = []
@@ -1437,93 +1947,163 @@ def search_multi(queries: list, match_context: dict | None = None) -> dict:
                         "search_query": query,
                         "locale": hit.get("locale") or locale,
                         "source_tier": source_tier,
+                        "query_category": query_category,
                     }
                 )
             if not provider:
                 provider = result.get("provider", "")
 
-        raw_answer = "\n\n".join(raw_sections) if raw_sections else "No results found."
-        verification_context = match_context
-        if match_context:
-            verification_context = {
-                **match_context,
-                "search_locales": _unique(
-                    [locale, *match_context.get("search_locales", [])]
-                ),
-            }
-        verified_match = (
-            verify_match_hits(hits, verification_context)
-            if verification_context
-            else None
-        )
-        answer = raw_answer
-        batch_citations = _dedupe_keep_order(citations)
+        if provider:
+            provider_order.append(provider)
+        raw_sections_by_category.setdefault(query_category, []).extend(raw_sections)
+        raw_hits_by_category.setdefault(query_category, []).extend(hits)
 
-        if verified_match and verified_match.get("accepted_hits"):
-            answer = _format_hits_for_context(verified_match["accepted_hits"])
-            batch_citations = _dedupe_keep_order(
-                [
-                    hit["href"]
-                    for hit in verified_match["accepted_hits"]
-                    if hit.get("href")
-                ]
-            ) or batch_citations
-
-        locale_attempt = {
+        verification_context = {
+            **match_context,
+            "search_locales": _unique([locale, *match_context.get("search_locales", [])]),
+        }
+        batch_attempt = {
             "locale": locale,
             "queries": batch["queries"],
             "provider": provider,
             "source_tier": source_tier,
+            "query_category": query_category,
             "raw_hit_count": len(hits),
-            "accepted_hit_count": len((verified_match or {}).get("accepted_hits", [])),
-            "match_identity_verified": bool(
-                (verified_match or {}).get("match_identity_verified")
-            ),
-            "narrative_coverage_available": bool(
-                (verified_match or {}).get("narrative_coverage_available")
-            ),
+            "accepted_hit_count": 0,
+            "match_identity_verified": False,
+            "narrative_coverage_available": False,
+            "reaction_coverage_available": False,
+            "context_coverage_available": False,
         }
-        locale_attempts.append(locale_attempt)
 
-        batch_result = {
-            "answer": answer,
-            "raw_answer": raw_answer,
-            "citations": batch_citations,
-            "provider": provider,
-            "verified_match": verified_match,
-            "winning_locale": locale,
-            "source_tier": source_tier,
-        }
-        batch_rank = _batch_rank(verified_match, raw_answer)
-        if batch_rank > best_rank:
-            best_result = batch_result
-            best_rank = batch_rank
+        if query_category == QUERY_CATEGORY_MATCH_NARRATIVE:
+            batch_match = verify_match_hits(hits, verification_context)
+            batch_attempt["accepted_hit_count"] = len((batch_match or {}).get("accepted_hits", []))
+            batch_attempt["match_identity_verified"] = bool(
+                (batch_match or {}).get("match_identity_verified")
+            )
+            batch_attempt["narrative_coverage_available"] = bool(
+                (batch_match or {}).get("narrative_coverage_available")
+            )
+            batch_rank = (
+                int(bool((batch_match or {}).get("narrative_coverage_available"))),
+                int(bool((batch_match or {}).get("match_identity_verified"))),
+                len((batch_match or {}).get("accepted_hits", [])),
+                int(bool(raw_sections)),
+            )
+            if batch_rank > best_match_rank:
+                best_match_rank = batch_rank
+                best_match_locale = locale
+                best_match_source_tier = source_tier
+        elif query_category == QUERY_CATEGORY_POST_MATCH_REACTION:
+            batch_reaction = verify_reaction_hits(hits, verification_context)
+            batch_attempt["accepted_hit_count"] = len((batch_reaction or {}).get("accepted_hits", []))
+            batch_attempt["reaction_coverage_available"] = bool(
+                (batch_reaction or {}).get("reaction_coverage_available")
+            )
+            batch_attempt["match_identity_verified"] = bool(batch_attempt["accepted_hit_count"])
+        else:
+            batch_context = verify_context_hits(hits, verification_context)
+            batch_attempt["accepted_hit_count"] = len((batch_context or {}).get("accepted_hits", []))
+            batch_attempt["context_coverage_available"] = bool(
+                (batch_context or {}).get("context_coverage_available")
+            )
 
-        if match_context:
-            if match_report_can_answer(verified_match):
-                best_result = batch_result
-                break
-        elif raw_answer != "No results found.":
-            best_result = batch_result
-            break
+        locale_attempts.append(batch_attempt)
 
-    verified_match = best_result.get("verified_match")
-    winning_locale = best_result.get("winning_locale")
-    source_tier = best_result.get("source_tier")
-    if verified_match:
-        verified_match["searched_locales"] = [attempt["locale"] for attempt in locale_attempts]
-        verified_match["winning_locale"] = winning_locale
-        verified_match["source_tier"] = source_tier
-        if not verified_match.get("verified_source_language") and winning_locale:
-            verified_match["verified_source_language"] = locale_language(winning_locale)
+    combined_context = {
+        **match_context,
+        "search_locales": _unique([attempt["locale"] for attempt in locale_attempts]),
+    }
+    verified_match = verify_match_hits(
+        [
+            *raw_hits_by_category.get(QUERY_CATEGORY_MATCH_NARRATIVE, []),
+            *raw_hits_by_category.get(QUERY_CATEGORY_POST_MATCH_REACTION, []),
+        ],
+        combined_context,
+    )
+    reaction_summary = verify_reaction_hits(
+        raw_hits_by_category.get(QUERY_CATEGORY_POST_MATCH_REACTION, []),
+        combined_context,
+    ) or {"accepted_hits": [], "reaction_coverage_available": False}
+    context_summary = verify_context_hits(
+        raw_hits_by_category.get(QUERY_CATEGORY_CONTEXT_SENTIMENT, []),
+        combined_context,
+    ) or {"accepted_hits": [], "context_coverage_available": False}
+
+    # Use fixture_hits as supplement when accepted match narrative hits are thin.
+    # fixture_hits passed both-teams + date verification but missed the narrow
+    # "match report" / "analysis" keyword filter — they are still relevant articles.
+    match_accepted = (verified_match or {}).get("accepted_hits", [])
+    match_fixture = (verified_match or {}).get("fixture_hits", [])
+    if len(match_accepted) < 4 and match_fixture:
+        accepted_hrefs = {h.get("href") for h in match_accepted}
+        combined_match = match_accepted + [
+            h for h in match_fixture if h.get("href") not in accepted_hrefs
+        ]
+        match_evidence = _rank_and_dedupe_hits(combined_match, limit=10)
+    else:
+        match_evidence = _rank_and_dedupe_hits(match_accepted, limit=10)
+
+    evidence_blocks = {
+        QUERY_CATEGORY_MATCH_NARRATIVE: match_evidence,
+        QUERY_CATEGORY_POST_MATCH_REACTION: _rank_and_dedupe_hits(
+            reaction_summary.get("accepted_hits", []),
+            limit=8,
+        ),
+        QUERY_CATEGORY_CONTEXT_SENTIMENT: _rank_and_dedupe_hits(
+            context_summary.get("accepted_hits", []),
+            limit=6,
+        ),
+    }
+    ordered_evidence_hits = [
+        *evidence_blocks[QUERY_CATEGORY_MATCH_NARRATIVE],
+        *evidence_blocks[QUERY_CATEGORY_POST_MATCH_REACTION],
+        *evidence_blocks[QUERY_CATEGORY_CONTEXT_SENTIMENT],
+    ]
+    evidence_citations = _dedupe_keep_order(
+        [hit.get("href", "") for hit in ordered_evidence_hits if hit.get("href")]
+    )
+    if not evidence_citations:
+        evidence_citations = _dedupe_keep_order(
+            [
+                hit.get("href", "")
+                for category_hits in raw_hits_by_category.values()
+                for hit in category_hits
+                if hit.get("href")
+            ]
+        )
+
+    if verified_match is None:
+        verified_match = {**combined_context}
+    verified_match["accepted_hits"] = evidence_blocks[QUERY_CATEGORY_MATCH_NARRATIVE]
+    verified_match["reaction_hits"] = evidence_blocks[QUERY_CATEGORY_POST_MATCH_REACTION]
+    verified_match["context_hits"] = evidence_blocks[QUERY_CATEGORY_CONTEXT_SENTIMENT]
+    verified_match["context_coverage_available"] = bool(
+        evidence_blocks[QUERY_CATEGORY_CONTEXT_SENTIMENT]
+    )
+    verified_match["reaction_coverage_available"] = bool(
+        evidence_blocks[QUERY_CATEGORY_POST_MATCH_REACTION]
+    )
+    verified_match["searched_locales"] = _unique([attempt["locale"] for attempt in locale_attempts])
+    verified_match["winning_locale"] = best_match_locale
+    verified_match["primary_match_locale"] = best_match_locale
+    verified_match["source_tier"] = best_match_source_tier
+    if not verified_match.get("verified_source_language") and best_match_locale:
+        verified_match["verified_source_language"] = locale_language(best_match_locale)
+
+    formatted_evidence = _format_evidence_blocks_for_context(evidence_blocks)
+    raw_answer = _format_raw_sections_by_category(raw_sections_by_category)
 
     return {
-        "answer": best_result["answer"],
-        "raw_answer": best_result["raw_answer"],
-        "citations": best_result["citations"],
-        "provider": best_result["provider"],
+        "answer": formatted_evidence,
+        "raw_answer": raw_answer,
+        "citations": evidence_citations,
+        "provider": " + ".join(_unique(provider_order)),
         "verified_match": verified_match,
         "locale_attempts": locale_attempts,
-        "winning_locale": winning_locale,
-        "source_tier": source_tier,
+        "winning_locale": best_match_locale,
+        "primary_match_locale": best_match_locale,
+        "source_tier": best_match_source_tier,
+        "evidence_blocks": evidence_blocks,
     }

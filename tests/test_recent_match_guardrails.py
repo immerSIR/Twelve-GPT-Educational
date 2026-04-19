@@ -6,6 +6,7 @@ from utils.search import (
     build_recent_match_search,
     match_report_can_answer,
     resolve_query_date,
+    verify_context_hits,
     verify_match_hits,
 )
 
@@ -85,12 +86,39 @@ class RecentMatchGuardrailsTests(unittest.TestCase):
         self.assertTrue(verified["narrative_coverage_available"])
         self.assertTrue(verified["match_result_verified"])
         self.assertEqual(verified["verified_score"], "FC Porto 2-1 SC Braga")
-        self.assertEqual(len(verified["accepted_hits"]), 2)
+        self.assertEqual(len(verified["accepted_hits"]), 1)
 
         rejected_reasons = {hit["reason"] for hit in verified["rejected_hits"]}
         self.assertIn("wrong_or_missing_date", rejected_reasons)
         self.assertIn("non_football_result", rejected_reasons)
         self.assertIn("generic_team_page", rejected_reasons)
+
+    def test_context_only_hits_do_not_unlock_match_report(self):
+        built = build_recent_match_search(
+            "How was the game between FC Porto vs SC Braga on day 22 of March?",
+            ["FC Porto vs SC Braga match report tactical analysis 2025/26"],
+            today=date(2026, 3, 23),
+        )
+        match_context = built["match_context"]
+
+        hits = [
+            {
+                "title": "FC Porto fans boo despite Braga win as pressure rises on coach",
+                "body": "March 22, 2026: FC Porto beat SC Braga, but supporters booed and pressure is rising around the coach.",
+                "href": "https://www.goal.com/en/fc-porto-fans-boo",
+                "locale": "en",
+                "source_tier": "english_fallback",
+            }
+        ]
+
+        verified_match = verify_match_hits(hits, match_context, today=date(2026, 3, 23))
+        verified_context = verify_context_hits(hits, match_context, today=date(2026, 3, 23))
+
+        self.assertTrue(verified_match["match_identity_verified"])
+        self.assertFalse(verified_match["narrative_coverage_available"])
+        self.assertFalse(match_report_can_answer(verified_match))
+        self.assertTrue(verified_context["context_coverage_available"])
+        self.assertEqual(len(verified_context["accepted_hits"]), 1)
 
     def test_refusal_message_uses_exact_date_and_disallows_guessing(self):
         built = build_recent_match_search(
